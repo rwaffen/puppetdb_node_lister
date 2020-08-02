@@ -1,0 +1,86 @@
+<div class="alert alert-info" role="alert"><%= params[:node_name] %></div>
+
+
+<a href="javascript:history.back()" class="btn btn-primary" role="button">Back</a>
+<br/>
+<br/>
+
+<h1>Events</h1>
+
+<table class="table table-condensed table-hover">
+  <thead>
+    <tr>
+      <th>Resource</th>
+      <th>Status</th>
+      <th>Changed From</th>
+      <th>Changed to</th>
+    </tr>
+  </thead>
+  <tbody>
+  <%
+    events = get_node_last_report(params[:node_name])[0]['resource_events']['data']
+    events.each do |event|
+
+    color = "info" if event['status'] == "success"
+    color = "warning" if event['status'] == "skipped"
+    color = "danger"  if event['status'] == "failure"
+  %>
+    <tr class="<%= color %>">
+      <td>
+        <%= event['resource_type'] %>[<%= event['resource_title'] %>]
+      </td>
+      <td>
+        <%= event['status'] %>
+      </td>
+      <td>
+        <%= event['old_value'] %>
+      </td>
+      <td>
+        <%= event['new_value'] %>
+      </td>
+    </tr>
+  <% end unless events.nil? %>
+  </tbody>
+</table>
+
+<h1>Logs</h1>
+
+<table class="table table-condensed table-hover">
+  <thead>
+    <tr>
+      <th>Timestamp</th>
+      <th>Source</th>
+      <th>Level</th>
+      <th>Message</th>
+      <th>Location</th>
+    </tr>
+  </thead>
+  <tbody>
+  <%
+    logs = get_node_last_report(params[:node_name])[0]['logs']['data']
+    logs.each do |log|
+
+    color = "success" if log['level'] == "notice"
+    color = "warning" if log['level'] == "warning"
+    color = "danger"  if log['level'] == "err"
+  %>
+    <tr class="<%= color %>">
+      <td style="word-wrap: break-word; min-width: 160px; max-width: 160px;">
+        <strong><%= convert_from_utc_to_local log['time'] %></strong>
+      </td>
+      <td style="word-wrap: break-word; min-width: 250px; max-width: 250px;">
+        <%= log['source'] %>
+      </td>
+      <td>
+        <%= log['level'] %>
+      </td>
+      <td>
+        <%= log['message'] %>
+      </td>
+      <td style="word-wrap: break-word; min-width: 250px; max-width: 250px;">
+        <%= log['file'] %>:<%= log['line'] %>
+      </td>
+    </tr>
+  <% end unless logs.nil? %>
+  </tbody>
+</table>

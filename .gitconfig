@@ -1,0 +1,6 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Robert Waffen
+	email = rwaffen@gmail.com
+[color]
+	ui = true

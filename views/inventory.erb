@@ -1,0 +1,55 @@
+<table class="table table-condensed table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>IP</th>
+      <th>OS</th>
+      <th>Agent Version</th>
+      <<th>Status</th>
+      <th>Action</th>
+      <th>Last Seen</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% inventory.each_with_index do |node, index|
+      node_status = nodes.select{|name| name['certname'] == node['certname']}
+      unless node_status.empty?
+        color = "success" if node_status[0]['latest_report_status'] == "unchanged"
+        color = "info"    if node_status[0]['latest_report_status'] == "changed"
+        color = "danger"  if node_status[0]['latest_report_status'] == "failed"
+      end
+    %>
+      <tr>
+        <td><%= index %></td>
+        <td><%= node['certname'] %></td>
+        <td><%= node['facts']['ipaddress'] %></td>
+        <td><%= node['facts']['os']['name'] %></td>
+        <td><%= node['facts']['aio_agent_version'] %></td>
+        <td class="<%= color %>">
+          <div class="text-center">
+          <% unless node_status.empty? %>
+            <%= node_status[0]['latest_report_status'] %>
+          <% end %>
+          </div>
+        </td>
+        <td>
+          <form action="/info" method="get" style="display: inline;">
+            <input type="hidden" name="node_name" value="<%= node['certname'] %>">
+            <button type="submit" name="action_info" value="info" class="btn btn-primary">
+              <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+            </button>
+          </form>
+
+          <form action="/facts" method="get" style="display: inline;">
+            <input type="hidden" name="node_name" value="<%= node['certname'] %>">
+            <button type="submit" name="action_facts" value="facts" class="btn btn-info">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            </button>
+          </form>
+        </td>
+        <td><%= convert_from_utc_to_local node['timestamp'] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

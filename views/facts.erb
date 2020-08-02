@@ -1,0 +1,33 @@
+<div class="alert alert-info" role="alert"><%= params[:node_name] %></div>
+
+<a href="javascript:history.back()" class="btn btn-primary" role="button">Back</a>
+<br/>
+<br/>
+
+<h1>Facts</h1>
+
+<table class="table table-condensed table-hover">
+
+  <tbody>
+    <%
+      facts = get_all_node_facts(params[:node_name])
+      sorted_facts = facts.sort_by { |k| k['name'] }
+      sorted_facts.each do |fact|
+        %>
+      <tr>
+        <td>
+          <strong><%= fact['name'] %>:</strong>
+        </td>
+        <% if fact['value'].is_a?(Hash) or fact['value'].is_a?(Array) %>
+          <td>
+            <pre><%= fact['value'].to_yaml.gsub("---\n", '') %></pre>
+          </td>
+        <% else %>
+          <td>
+            <pre><%= fact['value'] %></pre>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
