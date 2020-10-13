@@ -54,7 +54,7 @@ GEM
       insist
       mustache (= 0.99.8)
       stud
-    rack (2.0.7)
+    rack (2.2.3)
     rack-protection (2.0.7)
       rack
     rest-client (2.1.0)
